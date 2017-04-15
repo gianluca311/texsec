@@ -1,0 +1,95 @@
+consumes:
+- application/json
+- application/xml
+- application/gob
+- application/x-gob
+host: localhost:8080
+info:
+  description: An API for secure compilation of Latex documents
+  title: Secure Latex Compilation API
+  version: ""
+paths:
+  /download/{uuid}:
+    get:
+      description: Download route for compilation
+      operationId: latex#download
+      parameters:
+      - description: Job UUID
+        in: path
+        name: uuid
+        required: true
+        type: integer
+      produces:
+      - text/plain
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Compilation had to much downloads
+        "404":
+          description: Not Found
+      schemes:
+      - http
+      summary: download latex
+      tags:
+      - latex
+  /status/{uuid}:
+    get:
+      description: Actual compilation status
+      operationId: latex#status
+      parameters:
+      - description: Job UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+      schemes:
+      - http
+      summary: status latex
+      tags:
+      - latex
+  /upload:
+    post:
+      description: Route for uploading the Latex files
+      operationId: latex#upload
+      parameters:
+      - in: query
+        name: debug
+        required: false
+        type: boolean
+      - in: query
+        name: max_downloads
+        required: false
+        type: integer
+      - in: query
+        name: uuid
+        required: false
+        type: string
+      responses:
+        "200":
+          description: OK
+        "406":
+          description: Not Acceptable
+      schemes:
+      - http
+      summary: upload latex
+      tags:
+      - latex
+produces:
+- application/json
+responses:
+  NotAcceptable:
+    description: Not Acceptable
+  NotFound:
+    description: Not Found
+  OK:
+    description: OK
+schemes:
+- http
+swagger: "2.0"
