@@ -18,10 +18,10 @@ var _ = Resource("latex", func() { // Resources group related API endpoints
 	Action("upload", func() {
 		Description("Route for uploading the Latex files")
 		Routing(POST("/upload"))
-		Params(func() {
-			Param("uuid", String)
-			Param("max_downloads", Integer)
-			Param("debug", Boolean)
+		Payload(func() {
+			Member("max_downloads", Integer)
+			Member("file")
+			Member("debug", Boolean)
 		})
 		Response(OK, "application/json")
 		Response(NotAcceptable)
@@ -57,11 +57,13 @@ var LatexArchive = MediaType("application/vnd.texsec.archive", func() {
 	Description("Latex file Archive")
 	TypeName("LatexArchive")
 	Attributes(func() {
+		Attribute("uuid", String, "Archive UUID")
 		Attribute("filename", String, "Archive filename")
 		Attribute("uploaded_at", DateTime, "Upload timestamp")
-		Required("filename", "uploaded_at")
+		Required("uuid", "filename", "uploaded_at")
 	})
 	View("default", func() {
+		Attribute("uuid")
 		Attribute("filename")
 		Attribute("uploaded_at")
 	})
