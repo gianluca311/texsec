@@ -66,25 +66,15 @@ func (c *LatexController) Upload(ctx *app.UploadLatexContext) error {
 	// Put your logic here
 
 	//FIX ME
-	reader, err := ctx.MultipartReader()
+	fmt.Println(ctx)
+	file, handler, err := ctx.FormFile("file")
+	if err != nil {
+		return goa.ErrBadRequest("failed to load file: %s", err.Error())
+	}
+	defer file.Close()
 	var archive *app.LatexArchive
 
-	if err != nil {
-		return goa.ErrBadRequest("failed to read: %s", err)
-	}
-	if reader == nil {
-		return goa.ErrBadRequest("not a multipart request")
-	}
-
-	file, err := reader.NextPart()
-	if err == io.EOF {
-		return goa.ErrBadRequest("")
-	}
-	if err != nil {
-		return goa.ErrBadRequest("failed to load part: %s", err)
-	}
-
-	fileName := "latex-archive-" + time.Now().String()
+	fileName := "latex-archive-" + time.Now().String() + handler.Filename
 	f, err := os.OpenFile("./archives/"+fileName, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		return fmt.Errorf("failed to save file: %s", err)

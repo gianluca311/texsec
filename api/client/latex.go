@@ -11,7 +11,6 @@
 package client
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"net/http"
@@ -79,13 +78,6 @@ func (c *Client) NewStatusLatexRequest(ctx context.Context, path string) (*http.
 	return req, nil
 }
 
-// UploadLatexPayload is the latex upload action payload.
-type UploadLatexPayload struct {
-	Debug        *bool   `form:"debug,omitempty" json:"debug,omitempty" xml:"debug,omitempty"`
-	File         *string `form:"file,omitempty" json:"file,omitempty" xml:"file,omitempty"`
-	MaxDownloads *int    `form:"max_downloads,omitempty" json:"max_downloads,omitempty" xml:"max_downloads,omitempty"`
-}
-
 // UploadLatexPath computes a request path to the upload action of latex.
 func UploadLatexPath() string {
 
@@ -93,8 +85,8 @@ func UploadLatexPath() string {
 }
 
 // Route for uploading the Latex files
-func (c *Client) UploadLatex(ctx context.Context, path string, payload *UploadLatexPayload, contentType string) (*http.Response, error) {
-	req, err := c.NewUploadLatexRequest(ctx, path, payload, contentType)
+func (c *Client) UploadLatex(ctx context.Context, path string) (*http.Response, error) {
+	req, err := c.NewUploadLatexRequest(ctx, path)
 	if err != nil {
 		return nil, err
 	}
@@ -102,29 +94,15 @@ func (c *Client) UploadLatex(ctx context.Context, path string, payload *UploadLa
 }
 
 // NewUploadLatexRequest create the request corresponding to the upload action endpoint of the latex resource.
-func (c *Client) NewUploadLatexRequest(ctx context.Context, path string, payload *UploadLatexPayload, contentType string) (*http.Request, error) {
-	var body bytes.Buffer
-	if contentType == "" {
-		contentType = "*/*" // Use default encoder
-	}
-	err := c.Encoder.Encode(payload, &body, contentType)
-	if err != nil {
-		return nil, fmt.Errorf("failed to encode body: %s", err)
-	}
+func (c *Client) NewUploadLatexRequest(ctx context.Context, path string) (*http.Request, error) {
 	scheme := c.Scheme
 	if scheme == "" {
 		scheme = "http"
 	}
 	u := url.URL{Host: c.Host, Scheme: scheme, Path: path}
-	req, err := http.NewRequest("POST", u.String(), &body)
+	req, err := http.NewRequest("POST", u.String(), nil)
 	if err != nil {
 		return nil, err
-	}
-	header := req.Header
-	if contentType == "*/*" {
-		header.Set("Content-Type", "application/json")
-	} else {
-		header.Set("Content-Type", contentType)
 	}
 	return req, nil
 }

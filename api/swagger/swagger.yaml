@@ -3,25 +3,6 @@ consumes:
 - application/xml
 - application/gob
 - application/x-gob
-definitions:
-  UploadLatexPayload:
-    example:
-      debug: true
-      file: Distinctio cum consequatur.
-      max_downloads: 5.76595e+18
-    properties:
-      debug:
-        example: true
-        type: boolean
-      file:
-        example: Distinctio cum consequatur.
-        type: string
-      max_downloads:
-        example: 5.76595e+18
-        format: int64
-        type: integer
-    title: UploadLatexPayload
-    type: object
 host: localhost:8080
 info:
   description: An API for secure compilation of Latex documents
@@ -77,12 +58,6 @@ paths:
     post:
       description: Route for uploading the Latex files
       operationId: latex#upload
-      parameters:
-      - in: body
-        name: payload
-        required: true
-        schema:
-          $ref: '#/definitions/UploadLatexPayload'
       responses:
         "200":
           description: OK

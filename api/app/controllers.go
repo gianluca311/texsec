@@ -82,24 +82,8 @@ func MountLatexController(service *goa.Service, ctrl LatexController) {
 		if err != nil {
 			return err
 		}
-		// Build the payload
-		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
-			rctx.Payload = rawPayload.(*UploadLatexPayload)
-		} else {
-			return goa.MissingPayloadError()
-		}
 		return ctrl.Upload(rctx)
 	}
-	service.Mux.Handle("POST", "/upload", ctrl.MuxHandler("upload", h, unmarshalUploadLatexPayload))
+	service.Mux.Handle("POST", "/upload", ctrl.MuxHandler("upload", h, nil))
 	service.LogInfo("mount", "ctrl", "Latex", "action", "Upload", "route", "POST /upload")
-}
-
-// unmarshalUploadLatexPayload unmarshals the request body into the context request data Payload field.
-func unmarshalUploadLatexPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
-	payload := &uploadLatexPayload{}
-	if err := service.DecodeRequest(req, payload); err != nil {
-		return err
-	}
-	goa.ContextRequest(ctx).Payload = payload.Publicize()
-	return nil
 }

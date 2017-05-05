@@ -116,7 +116,6 @@ type UploadLatexContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Payload *UploadLatexPayload
 }
 
 // NewUploadLatexContext parses the incoming request URL and body, performs validations and creates the
@@ -129,35 +128,6 @@ func NewUploadLatexContext(ctx context.Context, r *http.Request, service *goa.Se
 	req.Request = r
 	rctx := UploadLatexContext{Context: ctx, ResponseData: resp, RequestData: req}
 	return &rctx, err
-}
-
-// uploadLatexPayload is the latex upload action payload.
-type uploadLatexPayload struct {
-	Debug        *bool   `form:"debug,omitempty" json:"debug,omitempty" xml:"debug,omitempty"`
-	File         *string `form:"file,omitempty" json:"file,omitempty" xml:"file,omitempty"`
-	MaxDownloads *int    `form:"max_downloads,omitempty" json:"max_downloads,omitempty" xml:"max_downloads,omitempty"`
-}
-
-// Publicize creates UploadLatexPayload from uploadLatexPayload
-func (payload *uploadLatexPayload) Publicize() *UploadLatexPayload {
-	var pub UploadLatexPayload
-	if payload.Debug != nil {
-		pub.Debug = payload.Debug
-	}
-	if payload.File != nil {
-		pub.File = payload.File
-	}
-	if payload.MaxDownloads != nil {
-		pub.MaxDownloads = payload.MaxDownloads
-	}
-	return &pub
-}
-
-// UploadLatexPayload is the latex upload action payload.
-type UploadLatexPayload struct {
-	Debug        *bool   `form:"debug,omitempty" json:"debug,omitempty" xml:"debug,omitempty"`
-	File         *string `form:"file,omitempty" json:"file,omitempty" xml:"file,omitempty"`
-	MaxDownloads *int    `form:"max_downloads,omitempty" json:"max_downloads,omitempty" xml:"max_downloads,omitempty"`
 }
 
 // OK sends a HTTP response with status code 200.

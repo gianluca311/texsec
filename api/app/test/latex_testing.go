@@ -309,11 +309,11 @@ func StatusLatexOK(t goatest.TInterface, ctx context.Context, service *goa.Servi
 	return rw
 }
 
-// UploadLatexNotAcceptable runs the method Upload of the given controller with the given parameters and payload.
+// UploadLatexNotAcceptable runs the method Upload of the given controller with the given parameters.
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func UploadLatexNotAcceptable(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.LatexController, payload *app.UploadLatexPayload) http.ResponseWriter {
+func UploadLatexNotAcceptable(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.LatexController) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -349,7 +349,6 @@ func UploadLatexNotAcceptable(t goatest.TInterface, ctx context.Context, service
 	if _err != nil {
 		panic("invalid test data " + _err.Error()) // bug
 	}
-	uploadCtx.Payload = payload
 
 	// Perform action
 	_err = ctrl.Upload(uploadCtx)
@@ -366,11 +365,11 @@ func UploadLatexNotAcceptable(t goatest.TInterface, ctx context.Context, service
 	return rw
 }
 
-// UploadLatexOK runs the method Upload of the given controller with the given parameters and payload.
+// UploadLatexOK runs the method Upload of the given controller with the given parameters.
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func UploadLatexOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.LatexController, payload *app.UploadLatexPayload) http.ResponseWriter {
+func UploadLatexOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.LatexController) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -406,7 +405,6 @@ func UploadLatexOK(t goatest.TInterface, ctx context.Context, service *goa.Servi
 	if _err != nil {
 		panic("invalid test data " + _err.Error()) // bug
 	}
-	uploadCtx.Payload = payload
 
 	// Perform action
 	_err = ctrl.Upload(uploadCtx)

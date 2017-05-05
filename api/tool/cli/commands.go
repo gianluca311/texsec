@@ -44,8 +44,6 @@ type (
 
 	// UploadLatexCommand is the command line data structure for the upload action of latex
 	UploadLatexCommand struct {
-		Payload     string
-		ContentType string
 		PrettyPrint bool
 	}
 )
@@ -89,16 +87,7 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 	sub = &cobra.Command{
 		Use:   `latex ["/upload"]`,
 		Short: ``,
-		Long: `
-
-Payload example:
-
-{
-   "debug": true,
-   "file": "Distinctio cum consequatur.",
-   "max_downloads": 5765950205590521503
-}`,
-		RunE: func(cmd *cobra.Command, args []string) error { return tmp3.Run(c, args) },
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp3.Run(c, args) },
 	}
 	tmp3.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp3.PrettyPrint, "pp", false, "Pretty print response body")
@@ -319,16 +308,9 @@ func (cmd *UploadLatexCommand) Run(c *client.Client, args []string) error {
 	} else {
 		path = "/upload"
 	}
-	var payload client.UploadLatexPayload
-	if cmd.Payload != "" {
-		err := json.Unmarshal([]byte(cmd.Payload), &payload)
-		if err != nil {
-			return fmt.Errorf("failed to deserialize payload: %s", err)
-		}
-	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.UploadLatex(ctx, path, &payload, cmd.ContentType)
+	resp, err := c.UploadLatex(ctx, path)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -340,6 +322,4 @@ func (cmd *UploadLatexCommand) Run(c *client.Client, args []string) error {
 
 // RegisterFlags registers the command flags with the command line.
 func (cmd *UploadLatexCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
-	cc.Flags().StringVar(&cmd.Payload, "payload", "", "Request body encoded in JSON")
-	cc.Flags().StringVar(&cmd.ContentType, "content", "", "Request content type override, e.g. 'application/x-www-form-urlencoded'")
 }

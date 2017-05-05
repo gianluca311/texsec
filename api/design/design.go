@@ -18,11 +18,7 @@ var _ = Resource("latex", func() { // Resources group related API endpoints
 	Action("upload", func() {
 		Description("Route for uploading the Latex files")
 		Routing(POST("/upload"))
-		Payload(func() {
-			Member("max_downloads", Integer)
-			Member("file")
-			Member("debug", Boolean)
-		})
+
 		Response(OK, "application/json")
 		Response("Not acceptable", func() {
 			Description("Upload was not acceptable")
