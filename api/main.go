@@ -8,7 +8,7 @@ import (
 	"github.com/goadesign/goa/middleware"
 )
 
-func startAPI() {
+func StartAPI() {
 	// Create service
 	service := goa.New("latex")
 
