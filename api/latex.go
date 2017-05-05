@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"sync"
 	"time"
 
@@ -27,9 +28,9 @@ type LatexUploadArchiveData struct {
 }
 
 type ResponseMessage struct {
-	ok      bool
-	uuid    string
-	message string
+	OK      bool
+	UUID    string
+	Message string
 }
 
 // NewLatexController creates a latex controller.
@@ -65,8 +66,9 @@ func (c *LatexController) Upload(ctx *app.UploadLatexContext) error {
 
 	// Put your logic here
 
+	debug, _ := strconv.ParseBool(ctx.PostFormValue("debug"))
+	maxDownloads, _ := strconv.Atoi(ctx.PostFormValue("max_downloads"))
 	//FIX ME
-	fmt.Println(ctx)
 	file, handler, err := ctx.FormFile("file")
 	if err != nil {
 		return goa.ErrBadRequest("failed to load file: %s", err.Error())
@@ -87,12 +89,12 @@ func (c *LatexController) Upload(ctx *app.UploadLatexContext) error {
 	archive = &app.LatexArchive{UUID: data.UUID, Filename: data.FileName, UploadedAt: data.UploadedAt}
 
 	res := &ResponseMessage{
-		ok:      true,
-		uuid:    archive.UUID,
-		message: "Upload success full. Proccess UUID: " + archive.UUID,
+		OK:      true,
+		UUID:    archive.UUID,
+		Message: "Upload success full. debug set to: " + strconv.FormatBool(debug) + " max_downloads: " + strconv.Itoa(maxDownloads) + " Proccess UUID: " + archive.UUID,
 	}
-	resJSON, _ := json.Marshal(res)
 
+	resJSON, _ := json.Marshal(res)
 	ctx.OK(resJSON)
 	// LatexController_Upload: end_implement
 	return nil
