@@ -29,7 +29,7 @@ func main() {
 	app.PersistentFlags().BoolVar(&c.Dump, "dump", false, "Dump HTTP request and response.")
 
 	// Initialize API client
-	c.UserAgent = "latex-cli/0"
+	c.UserAgent = "latex-cli/1.0.0"
 
 	// Register API commands
 	cli.RegisterCommands(app, c)

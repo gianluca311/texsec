@@ -3,11 +3,30 @@ consumes:
 - application/xml
 - application/gob
 - application/x-gob
+definitions:
+  UploadLatexPayload:
+    example:
+      debug: true
+      file: Distinctio cum consequatur.
+      max_downloads: 5.76595e+18
+    properties:
+      debug:
+        example: true
+        type: boolean
+      file:
+        example: Distinctio cum consequatur.
+        type: string
+      max_downloads:
+        example: 5.76595e+18
+        format: int64
+        type: integer
+    title: UploadLatexPayload
+    type: object
 host: localhost:8080
 info:
   description: An API for secure compilation of Latex documents
   title: Secure Latex Compilation API
-  version: ""
+  version: 1.0.0
 paths:
   /download/{uuid}:
     get:
@@ -20,15 +39,15 @@ paths:
         required: true
         type: integer
       produces:
-      - text/plain
       - application/json
+      - text/plain
       responses:
         "200":
           description: OK
         "400":
           description: Compilation had to much downloads
         "404":
-          description: Not Found
+          description: Download was not found
       schemes:
       - http
       summary: download latex
@@ -48,7 +67,7 @@ paths:
         "200":
           description: OK
         "404":
-          description: Not Found
+          description: UUID was not found
       schemes:
       - http
       summary: status latex
@@ -59,23 +78,16 @@ paths:
       description: Route for uploading the Latex files
       operationId: latex#upload
       parameters:
-      - in: query
-        name: debug
-        required: false
-        type: boolean
-      - in: query
-        name: max_downloads
-        required: false
-        type: integer
-      - in: query
-        name: uuid
-        required: false
-        type: string
+      - in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/UploadLatexPayload'
       responses:
         "200":
           description: OK
         "406":
-          description: Not Acceptable
+          description: Upload was not acceptable
       schemes:
       - http
       summary: upload latex
@@ -84,10 +96,6 @@ paths:
 produces:
 - application/json
 responses:
-  NotAcceptable:
-    description: Not Acceptable
-  NotFound:
-    description: Not Found
   OK:
     description: OK
 schemes:

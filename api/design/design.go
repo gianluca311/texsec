@@ -24,7 +24,11 @@ var _ = Resource("latex", func() { // Resources group related API endpoints
 			Member("debug", Boolean)
 		})
 		Response(OK, "application/json")
-		Response(NotAcceptable)
+		Response("Not acceptable", func() {
+			Description("Upload was not acceptable")
+			Status(406)
+			Media("application/json")
+		})
 	})
 
 	Action("status", func() {
@@ -34,7 +38,11 @@ var _ = Resource("latex", func() { // Resources group related API endpoints
 			Param("uuid", String, "Job UUID")
 		})
 		Response(OK, "application/json")
-		Response(NotFound)
+		Response("Not found", func() {
+			Description("UUID was not found")
+			Status(404)
+			Media("application/json")
+		})
 	})
 
 	Action("download", func() {
@@ -44,7 +52,11 @@ var _ = Resource("latex", func() { // Resources group related API endpoints
 			Param("uuid", Integer, "Job UUID")
 		})
 		Response(OK)
-		Response(NotFound)
+		Response("Not found", func() {
+			Description("Download was not found")
+			Status(404)
+			Media("application/json")
+		})
 		Response("Too much downloads", func() {
 			Description("Compilation had to much downloads")
 			Status(400)
