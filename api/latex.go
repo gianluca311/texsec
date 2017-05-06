@@ -23,6 +23,10 @@ type LatexController struct {
 	*sync.Mutex
 }
 
+type RPCRequest struct {
+	UUID string
+}
+
 type ResponseMessage struct {
 	OK      bool   `json:"ok"`
 	UUID    string `json:"uuid"`
@@ -51,6 +55,25 @@ func (c *LatexController) Download(ctx *app.DownloadLatexContext) error {
 func (c *LatexController) Status(ctx *app.StatusLatexContext) error {
 	// LatexController_Status: start_implement
 	// Put your logic here
+	client, err := rpc.DialHTTP("tcp", "localhost:1234")
+	if err != nil {
+		return goa.ErrInternal(err.Error())
+	}
+
+	uuidParam := ctx.Params.Get("uuid")
+	var resp ResponseMessage
+	err = client.Call("Status", &RPCRequest{UUID: uuidParam}, &resp)
+	if err != nil {
+		return goa.ErrInternal(err.Error())
+	}
+
+	if resp.OK == false {
+		jsonResp, _ := json.Marshal(resp)
+		return ctx.NotFound(jsonResp)
+	}
+
+	jsonResp, _ := json.Marshal(resp)
+	ctx.OK(jsonResp)
 
 	// LatexController_Status: end_implement
 	return nil
