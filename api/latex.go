@@ -2,14 +2,15 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
-	"io"
+	"io/ioutil"
 	"log"
 	"net/rpc"
-	"os"
 	"strconv"
 	"sync"
 	"time"
+
+	"bytes"
+	"io"
 
 	"github.com/gianluca311/texsec/api/app"
 	"github.com/goadesign/goa"
@@ -21,6 +22,18 @@ import (
 type LatexController struct {
 	*goa.Controller
 	*sync.Mutex
+}
+
+type RPCUploadRequest struct {
+	archiveInfo  *app.LatexArchive
+	file         []byte
+	maxDownloads int
+	debug        bool
+}
+
+type RPCDownloadResponse struct {
+	UUID string
+	file []byte
 }
 
 type RPCRequest struct {
@@ -45,8 +58,21 @@ func NewLatexController(service *goa.Service) *LatexController {
 func (c *LatexController) Download(ctx *app.DownloadLatexContext) error {
 	// LatexController_Download: start_implement
 
-	// Put your logic here
+	client, err := rpc.DialHTTP("tcp", "localhost:1234")
+	if err != nil {
+		return goa.ErrInternal(err.Error())
+	}
 
+	uuidParam := ctx.Params.Get("uuid")
+	var resp RPCDownloadResponse
+	err = client.Call("Download", &RPCRequest{UUID: uuidParam}, &resp)
+	if err != nil {
+		return goa.ErrInternal(err.Error())
+	}
+	fileReader := bytes.NewReader(resp.file)
+	ctx.Response.Header.Set("Content-Disposition", "attachment; filename="+uuidParam+".pdf")
+	ctx.Response.Header.Set("Content-Type", ctx.Response.Header.Get("Content-Type"))
+	io.Copy(ctx.ResponseWriter, fileReader)
 	// LatexController_Download: end_implement
 	return nil
 }
@@ -97,13 +123,14 @@ func (c *LatexController) Upload(ctx *app.UploadLatexContext) error {
 	}
 	defer file.Close()
 
-	head := make([]byte, 261)
-	_, err = file.Read(head)
+	fileContent, err := ioutil.ReadAll(file)
 	if err != nil {
 		return goa.ErrBadRequest("unable to read file: %s", err.Error())
 	}
 
-	if !filetype.IsArchive(head) {
+	fileHead := fileContent[261:]
+
+	if !filetype.IsArchive(fileHead) {
 		res := &ResponseMessage{
 			OK:      false,
 			Message: "Uploaded file isn't an archive",
@@ -112,18 +139,18 @@ func (c *LatexController) Upload(ctx *app.UploadLatexContext) error {
 		return ctx.NotAcceptable(resJSON)
 	}
 
-	fileKind, _ := filetype.Match(head)
+	fileKind, _ := filetype.Match(fileHead)
 
 	var archive *app.LatexArchive
 
 	fileName := "latex-archive-" + uuid + fileKind.Extension
-	f, err := os.OpenFile("./archives/"+fileName, os.O_WRONLY|os.O_CREATE, 0666)
+	/*f, err := os.OpenFile("./archives/"+fileName, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		return fmt.Errorf("failed to save file: %s", err)
 	}
 
 	defer f.Close()
-	io.Copy(f, file)
+	io.Copy(f, file)*/
 
 	archive = &app.LatexArchive{UUID: uuid, Filename: fileName, UploadedAt: uploadedAt}
 
@@ -139,7 +166,8 @@ func (c *LatexController) Upload(ctx *app.UploadLatexContext) error {
 	}
 
 	var resp ResponseMessage
-	client.Call("StartProcessing", archive, &resp)
+	uploadRequest := RPCUploadRequest{archiveInfo: archive, file: fileContent, maxDownloads: maxDownloads}
+	client.Call("StartProcessing", uploadRequest, &resp)
 
 	resJSON, _ := json.Marshal(res)
 	ctx.OK(resJSON)
