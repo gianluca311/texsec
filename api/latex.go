@@ -115,6 +115,9 @@ func (c *LatexController) Upload(ctx *app.UploadLatexContext) error {
 
 	debug, _ := strconv.ParseBool(ctx.PostFormValue("debug"))
 	maxDownloads, _ := strconv.Atoi(ctx.PostFormValue("max_downloads"))
+	if maxDownloads < 0 {
+		maxDownloads = 0
+	}
 
 	//FIX ME
 	file, handler, err := ctx.FormFile("file")
