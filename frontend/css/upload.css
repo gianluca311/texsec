@@ -1,0 +1,17 @@
+    #my-awesome-dropzone {
+      margin: 25px;
+      width: 90%;
+      min-height: 350px;
+      padding: 54px 54px;
+      background: #FFFFFF;
+      border: 2px solid grey;
+    }
+
+    #my-awesome-dropzone:hover {
+      border: 2px dashed grey;
+    }
+
+    #my-awesome-dropzone > .dz-message {
+      text-align: center;
+      margin: 2em 0;
+    }
