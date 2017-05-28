@@ -13,6 +13,7 @@ package app
 import (
 	"context"
 	"github.com/goadesign/goa"
+	"github.com/goadesign/goa/cors"
 	"net/http"
 )
 
@@ -41,6 +42,9 @@ type LatexController interface {
 func MountLatexController(service *goa.Service, ctrl LatexController) {
 	initService(service)
 	var h goa.Handler
+	service.Mux.Handle("OPTIONS", "/download/:uuid", ctrl.MuxHandler("preflight", handleLatexOrigin(cors.HandlePreflight()), nil))
+	service.Mux.Handle("OPTIONS", "/status/:uuid", ctrl.MuxHandler("preflight", handleLatexOrigin(cors.HandlePreflight()), nil))
+	service.Mux.Handle("OPTIONS", "/upload", ctrl.MuxHandler("preflight", handleLatexOrigin(cors.HandlePreflight()), nil))
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -54,6 +58,7 @@ func MountLatexController(service *goa.Service, ctrl LatexController) {
 		}
 		return ctrl.Download(rctx)
 	}
+	h = handleLatexOrigin(h)
 	service.Mux.Handle("GET", "/download/:uuid", ctrl.MuxHandler("download", h, nil))
 	service.LogInfo("mount", "ctrl", "Latex", "action", "Download", "route", "GET /download/:uuid")
 
@@ -69,6 +74,7 @@ func MountLatexController(service *goa.Service, ctrl LatexController) {
 		}
 		return ctrl.Status(rctx)
 	}
+	h = handleLatexOrigin(h)
 	service.Mux.Handle("GET", "/status/:uuid", ctrl.MuxHandler("status", h, nil))
 	service.LogInfo("mount", "ctrl", "Latex", "action", "Status", "route", "GET /status/:uuid")
 
@@ -84,6 +90,33 @@ func MountLatexController(service *goa.Service, ctrl LatexController) {
 		}
 		return ctrl.Upload(rctx)
 	}
+	h = handleLatexOrigin(h)
 	service.Mux.Handle("POST", "/upload", ctrl.MuxHandler("upload", h, nil))
 	service.LogInfo("mount", "ctrl", "Latex", "action", "Upload", "route", "POST /upload")
+}
+
+// handleLatexOrigin applies the CORS response headers corresponding to the origin.
+func handleLatexOrigin(h goa.Handler) goa.Handler {
+
+	return func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		origin := req.Header.Get("Origin")
+		if origin == "" {
+			// Not a CORS request
+			return h(ctx, rw, req)
+		}
+		if cors.MatchOrigin(origin, "*") {
+			ctx = goa.WithLogContext(ctx, "origin", origin)
+			rw.Header().Set("Access-Control-Allow-Origin", origin)
+			rw.Header().Set("Access-Control-Expose-Headers", "Age, Cache-Control, Content-Length, Content-Type, Date, Expires, Host, Keep-Alive, Last-Modified, Location, Server, Status, Strict-Transport-Security, X-Requested-With, Accept, Origin, X-File-Name")
+			rw.Header().Set("Access-Control-Max-Age", "600")
+			rw.Header().Set("Access-Control-Allow-Credentials", "true")
+			if acrm := req.Header.Get("Access-Control-Request-Method"); acrm != "" {
+				// We are handling a preflight request
+				rw.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+			}
+			return h(ctx, rw, req)
+		}
+
+		return h(ctx, rw, req)
+	}
 }

@@ -14,7 +14,11 @@ var myDropzone = new Dropzone("div#my-awesome-dropzone", { // Make the whole bod
   previewsContainer: "div#previews", // Define the container to display the previews
   maxFiles: 1,
   dictDefaultMessage: "Drop files here",
-  method: "POST"
+  method: "POST",
+  headers: {
+    'Cache-Control': null,
+    'X-Requested-With': null
+  }
 });
 
 myDropzone.on("addedfile", function(file) {

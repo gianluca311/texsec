@@ -17,7 +17,7 @@ document.querySelector("button[name=get_status]").onclick = function () {
     let body = document.querySelector("div#status-box > .panel-body")
 
     jQuery.ajax({
-        url: config.apiHost+"/status/"+ uuid
+        url: config.apiHost+"status/"+ uuid
     }).done(function(data) {
         body.innerHTML = JSON.stringify(data);
     }).fail(function(err) {
