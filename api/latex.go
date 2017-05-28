@@ -131,7 +131,7 @@ func (c *LatexController) Upload(ctx *app.UploadLatexContext) error {
 		return goa.ErrBadRequest("unable to read file: %s", err.Error())
 	}
 
-	fileHead := fileContent[261:]
+	fileHead := fileContent[:261]
 
 	if !filetype.IsArchive(fileHead) {
 		res := &ResponseMessage{
