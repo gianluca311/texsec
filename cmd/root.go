@@ -55,6 +55,7 @@ func initConfig() {
 
 	viper.SetConfigName(".texsec") // name of config file (without extension)
 	viper.AddConfigPath("$HOME")   // adding home directory as first search path
+	viper.AddConfigPath(".")       // Add current directory
 	viper.AutomaticEnv()           // read in environment variables that match
 
 	// If a config file is found, read it in.
