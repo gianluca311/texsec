@@ -244,7 +244,7 @@ func (this *Daemon) Compile(args *api.RPCCompileRequest, reply *api.ResponseMess
 		args.ArchiveInfo.UUID,
 		resp.ID,
 		args.ArchiveInfo.Filename,
-		outfile,
+		path.Join(volumePathAbsolute, outfile),
 		args.ArchiveInfo.UploadedAt,
 		args.MaxDownloads,
 		0,

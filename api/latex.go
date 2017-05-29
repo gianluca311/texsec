@@ -71,8 +71,9 @@ func (c *LatexController) Download(ctx *app.DownloadLatexContext) error {
 		return goa.ErrInternal(err.Error())
 	}
 	fileReader := bytes.NewReader(resp.File)
-	ctx.Response.Header.Set("Content-Disposition", "attachment; filename="+uuidParam+".pdf")
-	ctx.Response.Header.Set("Content-Type", ctx.Response.Header.Get("Content-Type"))
+
+	ctx.ResponseData.Header().Add("Content-Disposition", "attachment; filename="+uuidParam+".pdf")
+	ctx.ResponseData.Header().Set("Content-Type", ctx.ResponseData.Header().Get("Content-Type"))
 	io.Copy(ctx.ResponseWriter, fileReader)
 	// LatexController_Download: end_implement
 	return nil
