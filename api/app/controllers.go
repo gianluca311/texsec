@@ -107,7 +107,7 @@ func handleLatexOrigin(h goa.Handler) goa.Handler {
 		if cors.MatchOrigin(origin, "*") {
 			ctx = goa.WithLogContext(ctx, "origin", origin)
 			rw.Header().Set("Access-Control-Allow-Origin", origin)
-			rw.Header().Set("Access-Control-Expose-Headers", "Age, Cache-Control, Content-Length, Content-Type, Date, Expires, Host, Keep-Alive, Last-Modified, Location, Server, Status, Strict-Transport-Security, X-Requested-With, Accept, Origin, X-File-Name")
+			rw.Header().Set("Access-Control-Expose-Headers", "Cache-Control, Content-Length, Content-Type, Date, Expires, Host, Keep-Alive, Last-Modified, Location, Server, Status, Strict-Transport-Security, X-Requested-With, Accept, Origin, X-File-Name")
 			rw.Header().Set("Access-Control-Max-Age", "600")
 			rw.Header().Set("Access-Control-Allow-Credentials", "true")
 			if acrm := req.Header.Get("Access-Control-Request-Method"); acrm != "" {

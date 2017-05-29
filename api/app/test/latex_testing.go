@@ -28,7 +28,7 @@ import (
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DownloadLatexNotFound(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.LatexController, uuid int) http.ResponseWriter {
+func DownloadLatexNotFound(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.LatexController, uuid string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -85,7 +85,7 @@ func DownloadLatexNotFound(t goatest.TInterface, ctx context.Context, service *g
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DownloadLatexOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.LatexController, uuid int) http.ResponseWriter {
+func DownloadLatexOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.LatexController, uuid string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -142,7 +142,7 @@ func DownloadLatexOK(t goatest.TInterface, ctx context.Context, service *goa.Ser
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DownloadLatexTooMuchDownloads(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.LatexController, uuid int) http.ResponseWriter {
+func DownloadLatexTooMuchDownloads(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.LatexController, uuid string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer

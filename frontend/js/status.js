@@ -19,7 +19,7 @@ document.querySelector("button[name=get_status]").onclick = function () {
     jQuery.ajax({
         url: config.apiHost+"status/"+ uuid
     }).done(function(data) {
-        body.innerHTML = JSON.stringify(data);
+        body.innerHTML = data.message;
     }).fail(function(err) {
         document.querySelector("div#status-box").className = "panel panel-danger";
         body.innerHTML = JSON.stringify(err);

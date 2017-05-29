@@ -164,7 +164,7 @@ func (c *LatexController) Upload(ctx *app.UploadLatexContext) error {
 		Message: "Upload of " + handler.Filename + " successfull. debug set to: " + strconv.FormatBool(debug) + ". max_downloads: " + strconv.Itoa(maxDownloads) + " Proccess UUID: " + archive.UUID,
 	}
 
-	client, err := rpc.DialHTTP("tcp", "localhost:1234")
+	client, err := rpc.DialHTTP("tcp", viper.GetString("daemonEndpoint"))
 	if err != nil {
 		log.Fatal("dialing:", err)
 	}

@@ -51,7 +51,7 @@ var _ = Resource("latex", func() { // Resources group related API endpoints
 		Description("Download route for compilation")
 		Routing(GET("/download/:uuid"))
 		Params(func() {
-			Param("uuid", Integer, "Job UUID")
+			Param("uuid", String, "Job UUID")
 		})
 		Response(OK)
 		Response("Not found", func() {
