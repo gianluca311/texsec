@@ -15,6 +15,7 @@ import (
 	"github.com/gianluca311/texsec/api/app"
 	"github.com/goadesign/goa"
 	"github.com/satori/go.uuid"
+	"github.com/spf13/viper"
 	"gopkg.in/h2non/filetype.v1"
 )
 
@@ -24,16 +25,16 @@ type LatexController struct {
 	*sync.Mutex
 }
 
-type RPCUploadRequest struct {
-	archiveInfo  *app.LatexArchive
-	file         []byte
-	maxDownloads int
-	debug        bool
+type RPCCompileRequest struct {
+	ArchiveInfo  *app.LatexArchive
+	File         []byte
+	MaxDownloads int
+	Debug        bool
 }
 
 type RPCDownloadResponse struct {
-	UUID string
-	file []byte
+	ResponseMessage
+	File []byte
 }
 
 type RPCRequest struct {
@@ -58,20 +59,21 @@ func NewLatexController(service *goa.Service) *LatexController {
 func (c *LatexController) Download(ctx *app.DownloadLatexContext) error {
 	// LatexController_Download: start_implement
 
-	client, err := rpc.DialHTTP("tcp", "localhost:1234")
+	client, err := rpc.DialHTTP("tcp", viper.GetString("daemonEndpoint"))
 	if err != nil {
 		return goa.ErrInternal(err.Error())
 	}
 
 	uuidParam := ctx.Params.Get("uuid")
 	var resp RPCDownloadResponse
-	err = client.Call("Download", &RPCRequest{UUID: uuidParam}, &resp)
+	err = client.Call("Daemon.Download", RPCRequest{uuidParam}, &resp)
 	if err != nil {
 		return goa.ErrInternal(err.Error())
 	}
-	fileReader := bytes.NewReader(resp.file)
-	ctx.Response.Header.Set("Content-Disposition", "attachment; filename="+uuidParam+".pdf")
-	ctx.Response.Header.Set("Content-Type", ctx.Response.Header.Get("Content-Type"))
+	fileReader := bytes.NewReader(resp.File)
+
+	ctx.ResponseData.Header().Add("Content-Disposition", "attachment; filename="+uuidParam+".pdf")
+	ctx.ResponseData.Header().Set("Content-Type", ctx.ResponseData.Header().Get("Content-Type"))
 	io.Copy(ctx.ResponseWriter, fileReader)
 	// LatexController_Download: end_implement
 	return nil
@@ -81,14 +83,14 @@ func (c *LatexController) Download(ctx *app.DownloadLatexContext) error {
 func (c *LatexController) Status(ctx *app.StatusLatexContext) error {
 	// LatexController_Status: start_implement
 	// Put your logic here
-	client, err := rpc.DialHTTP("tcp", "localhost:1234")
+	client, err := rpc.DialHTTP("tcp", viper.GetString("daemonEndpoint"))
 	if err != nil {
 		return goa.ErrInternal(err.Error())
 	}
 
 	uuidParam := ctx.Params.Get("uuid")
 	var resp ResponseMessage
-	err = client.Call("Status", &RPCRequest{UUID: uuidParam}, &resp)
+	err = client.Call("Daemon.Status", RPCRequest{uuidParam}, &resp)
 	if err != nil {
 		return goa.ErrInternal(err.Error())
 	}
@@ -163,14 +165,14 @@ func (c *LatexController) Upload(ctx *app.UploadLatexContext) error {
 		Message: "Upload of " + handler.Filename + " successfull. debug set to: " + strconv.FormatBool(debug) + ". max_downloads: " + strconv.Itoa(maxDownloads) + " Proccess UUID: " + archive.UUID,
 	}
 
-	client, err := rpc.DialHTTP("tcp", "localhost:1234")
+	client, err := rpc.DialHTTP("tcp", viper.GetString("daemonEndpoint"))
 	if err != nil {
 		log.Fatal("dialing:", err)
 	}
 
 	var resp ResponseMessage
-	uploadRequest := RPCUploadRequest{archiveInfo: archive, file: fileContent, maxDownloads: maxDownloads}
-	client.Call("StartProcessing", uploadRequest, &resp)
+	uploadRequest := RPCCompileRequest{ArchiveInfo: archive, File: fileContent, MaxDownloads: maxDownloads}
+	client.Call("Daemon.Compile", uploadRequest, &resp)
 
 	resJSON, _ := json.Marshal(res)
 	ctx.OK(resJSON)
