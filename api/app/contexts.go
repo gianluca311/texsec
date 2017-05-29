@@ -14,7 +14,6 @@ import (
 	"context"
 	"github.com/goadesign/goa"
 	"net/http"
-	"strconv"
 )
 
 // DownloadLatexContext provides the latex download action context.
@@ -22,7 +21,7 @@ type DownloadLatexContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	UUID int
+	UUID string
 }
 
 // NewDownloadLatexContext parses the incoming request URL and body, performs validations and creates the
@@ -37,11 +36,7 @@ func NewDownloadLatexContext(ctx context.Context, r *http.Request, service *goa.
 	paramUUID := req.Params["uuid"]
 	if len(paramUUID) > 0 {
 		rawUUID := paramUUID[0]
-		if uuid, err2 := strconv.Atoi(rawUUID); err2 == nil {
-			rctx.UUID = uuid
-		} else {
-			err = goa.MergeErrors(err, goa.InvalidParamTypeError("uuid", rawUUID, "integer"))
-		}
+		rctx.UUID = rawUUID
 	}
 	return &rctx, err
 }

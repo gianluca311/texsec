@@ -31,7 +31,7 @@ type (
 	// DownloadLatexCommand is the command line data structure for the download action of latex
 	DownloadLatexCommand struct {
 		// Job UUID
-		UUID        int
+		UUID        string
 		PrettyPrint bool
 	}
 
@@ -254,7 +254,7 @@ func (cmd *DownloadLatexCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/download/%v", cmd.UUID)
+		path = fmt.Sprintf("/download/%v", url.QueryEscape(cmd.UUID))
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -270,8 +270,8 @@ func (cmd *DownloadLatexCommand) Run(c *client.Client, args []string) error {
 
 // RegisterFlags registers the command flags with the command line.
 func (cmd *DownloadLatexCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
-	var uuid int
-	cc.Flags().IntVar(&cmd.UUID, "uuid", uuid, `Job UUID`)
+	var uuid string
+	cc.Flags().StringVar(&cmd.UUID, "uuid", uuid, `Job UUID`)
 }
 
 // Run makes the HTTP request corresponding to the StatusLatexCommand command.

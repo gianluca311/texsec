@@ -15,12 +15,11 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"strconv"
 )
 
 // DownloadLatexPath computes a request path to the download action of latex.
-func DownloadLatexPath(uuid int) string {
-	param0 := strconv.Itoa(uuid)
+func DownloadLatexPath(uuid string) string {
+	param0 := uuid
 
 	return fmt.Sprintf("/download/%s", param0)
 }
