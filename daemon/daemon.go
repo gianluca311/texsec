@@ -214,6 +214,7 @@ func (this *Daemon) Compile(args *api.RPCCompileRequest, reply *api.ResponseMess
 		Image:           viper.GetString("dockerImage"),
 		Cmd:             []string{"pdflatex", "-output-directory=/texdata", fmt.Sprintf("/texdata/%s", path.Base(texFiles[0]))},
 		NetworkDisabled: true,
+		WorkingDir:      "/texdata",
 	}
 
 	hostCfg := &container.HostConfig{
