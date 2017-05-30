@@ -47,6 +47,15 @@ type ResponseMessage struct {
 	Message string `json:"message"`
 }
 
+type StatusMessage struct {
+	OK            bool      `json:"ok"`
+	UUID          string    `json:"uuid"`
+	MaxDownloads  int       `json:"max_downloads"`
+	DownloadCount int       `json:"download_count"`
+	UploadTime    time.Time `json:"upload_time"`
+	Message       string    `json:"message"`
+}
+
 // NewLatexController creates a latex controller.
 func NewLatexController(service *goa.Service) *LatexController {
 	return &LatexController{
@@ -89,7 +98,7 @@ func (c *LatexController) Status(ctx *app.StatusLatexContext) error {
 	}
 
 	uuidParam := ctx.Params.Get("uuid")
-	var resp ResponseMessage
+	var resp StatusMessage
 	err = client.Call("Daemon.Status", RPCRequest{uuidParam}, &resp)
 	if err != nil {
 		return goa.ErrInternal(err.Error())
