@@ -58,6 +58,11 @@ func initConfig() {
 	viper.AddConfigPath(".")       // Add current directory
 	viper.AutomaticEnv()           // read in environment variables that match
 
+	viper.SetDefault("daemonEndpoint", "localhost:1234")
+	viper.SetDefault("dockerImage", "tianon/latex")
+	viper.SetDefault("latexCommand", "pdflatex")
+	viper.SetDefault("latexCommandParam", "")
+
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
