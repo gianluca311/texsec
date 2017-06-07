@@ -50,7 +50,7 @@ type Daemon struct {
 	db     *bolt.DB
 }
 
-func (this *Daemon) Status(args *api.RPCRequest, reply *api.ResponseMessage) error {
+func (this *Daemon) Status(args *api.RPCRequest, reply *api.StatusMessage) error {
 
 	this.db.View(func(tx *bolt.Tx) error {
 
@@ -68,8 +68,11 @@ func (this *Daemon) Status(args *api.RPCRequest, reply *api.ResponseMessage) err
 		}
 
 		reply.OK = true
+		reply.DownloadCount = cmpl.DownloadCount
 		reply.Message = cmpl.Logs
 		reply.UUID = cmpl.UUID
+		reply.MaxDownloads = cmpl.MaxDownloads
+		reply.UploadTime = cmpl.UploadTime
 
 		return nil
 	})
@@ -212,7 +215,7 @@ func (this *Daemon) Compile(args *api.RPCCompileRequest, reply *api.ResponseMess
 
 	cfg := &container.Config{
 		Image:           viper.GetString("dockerImage"),
-		Cmd:             []string{"pdflatex", "-output-directory=/texdata", fmt.Sprintf("/texdata/%s", path.Base(texFiles[0]))},
+		Cmd:             []string{viper.GetString("latexCommand"), "-output-directory=/texdata", viper.GetString("latexCommandParam"), fmt.Sprintf("/texdata/%s", path.Base(texFiles[0]))},
 		NetworkDisabled: true,
 		WorkingDir:      "/texdata",
 	}
