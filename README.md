@@ -21,7 +21,7 @@ go get -u github.com/gianluca311/texsec
 ```
 
 ##### Frontend
-The frontend directory can be placed anywhere. You only have to configure the API Host and port within the frontend/js/config.js directory.
+The frontend directory can be placed anywhere on a external webserver or even on a workstation. You only have to configure the API Host and port within the frontend/js/config.js directory.
 
 #### Configuration
 TexSec runs without any configuration. If you want to parameterized docker image, latex command/parameter and rpc point place `.texsec.yml` file into the same directory as the binary is located.
