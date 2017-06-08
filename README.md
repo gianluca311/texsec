@@ -20,6 +20,9 @@ To build it from source, run
 go get -u github.com/gianluca311/texsec
 ```
 
+##### Frontend
+The frontend directory can be placed anywhere. You only have to configure the API Host and port within the frontend/js/config.js directory.
+
 #### Configuration
 TexSec runs without any configuration. If you want to parameterized docker image, latex command/parameter and rpc point place `.texsec.yml` file into the same directory as the binary is located.
 Following parameters are available with it's default values:
